@@ -1,0 +1,19 @@
+[Unit]
+Description=AI sandbox desktop - XFCE session on :1
+BindsTo=sandbox-desktop.service
+After=sandbox-desktop.service
+
+[Service]
+User=agent
+Environment=DISPLAY=:1
+Environment=XDG_RUNTIME_DIR=/run/agent
+RuntimeDirectory=agent
+RuntimeDirectoryMode=0700
+ExecStartPre=/bin/sh -c 'for i in $(seq 50); do xdpyinfo >/dev/null 2>&1 && exit 0; sleep 0.2; done; exit 1'
+ExecStartPre=/usr/bin/xset s off -dpms
+ExecStart=/usr/bin/dbus-run-session /usr/bin/startxfce4
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

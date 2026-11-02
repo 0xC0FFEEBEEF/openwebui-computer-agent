@@ -1,0 +1,15 @@
+#!/usr/sbin/nft -f
+# The agent user browses whatever the model decides, and web pages can try to steer
+# the model. Give it the internet only: no NEW connections to the home/lab LAN.
+# Replies (the viewer and control API on :6080) are established traffic and pass.
+table inet sandbox_egress
+delete table inet sandbox_egress
+table inet sandbox_egress {
+  chain out {
+    type filter hook output priority 0; policy accept;
+    meta skuid != "agent" accept
+    ct state established,related accept
+    ip daddr { 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16, 100.64.0.0/10 } counter reject
+    ip6 daddr { fc00::/7, fe80::/10 } counter reject
+  }
+}

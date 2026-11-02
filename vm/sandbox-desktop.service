@@ -1,0 +1,12 @@
+[Unit]
+Description=AI sandbox desktop - Xvnc display :1 (localhost only)
+After=network.target
+
+[Service]
+User=agent
+ExecStart=/usr/bin/Xvnc :1 -geometry 1280x800 -depth 24 -localhost=1 -rfbport 5901 -SecurityTypes None -AlwaysShared -AcceptSetDesktopSize=0 -nolisten tcp
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

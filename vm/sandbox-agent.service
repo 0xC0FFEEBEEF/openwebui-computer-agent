@@ -1,0 +1,20 @@
+[Unit]
+Description=AI sandbox control service (viewer, VNC relay, agent actions) on :6080
+After=sandbox-session.service
+Wants=sandbox-session.service
+
+[Service]
+User=agent
+Environment=DISPLAY=:1
+EnvironmentFile=/etc/sandbox-agent/env
+WorkingDirectory=/opt/sandbox-agent
+ExecStart=/opt/sandbox-agent/venv/bin/uvicorn sandbox_agent:app --host 0.0.0.0 --port 6080 --no-access-log --timeout-graceful-shutdown 3
+# Chrome is started from here; let it outlive a restart of this service.
+KillMode=process
+# Viewers hold live event streams open; without a limit uvicorn waits ~90 s for them on every stop.
+TimeoutStopSec=5
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
